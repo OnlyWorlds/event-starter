@@ -1,0 +1,13 @@
+# Cloudflare Pages reads this file (GitHub Pages ignores it). connect-src lets the page talk to
+# OnlyWorlds and nothing else; add a host here when your tool calls another.
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: microphone=(), camera=(), geolocation=(), payment=(), usb=()
+  Content-Security-Policy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: https://media.onlyworlds.com; font-src 'self'; connect-src 'self' https://www.onlyworlds.com; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'
+
+/index.html
+  Cache-Control: no-cache
+
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

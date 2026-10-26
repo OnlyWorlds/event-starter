@@ -1,0 +1,85 @@
+/* The starter's own look: change the colours here and the whole page follows. */
+:root {
+  --bg: #fafaf9;
+  --surface: #ffffff;
+  --line: #e2e2de;
+  --text: #1c1c1a;
+  --muted: #6b6b66;
+  --accent: #2563eb;
+  --on-accent: #ffffff;
+  --problem: #b42318;
+  --proposed: #a15c07;
+  --hidden: #6b6b66;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111110;
+    --surface: #1a1a18;
+    --line: #2e2e2b;
+    --text: #ececea;
+    --muted: #a1a19b;
+    --accent: #7aa7ff;
+    --on-accent: #0b1220;
+    --problem: #ff8a7a;
+    --proposed: #f0b45a;
+    --hidden: #a1a19b;
+  }
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+a { color: var(--accent); }
+button, input, select { font: inherit; color: inherit; }
+
+.top { padding: 16px; border-bottom: 1px solid var(--line); background: var(--surface); }
+.title { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.top h1 { margin: 0; font-size: 22px; overflow-wrap: anywhere; }
+.top .desc { margin: 6px 0 0; color: var(--muted); max-width: 70ch; overflow-wrap: anywhere; }
+.chip { font-size: 12px; border: 1px solid var(--line); border-radius: 999px; padding: 1px 8px; color: var(--muted); white-space: nowrap; }
+
+.yours { margin-top: 10px; }
+.yours summary { cursor: pointer; color: var(--accent); width: fit-content; }
+.key { display: grid; gap: 8px; max-width: 420px; margin-top: 8px; }
+.key label { display: grid; gap: 2px; font-size: 13px; color: var(--muted); }
+.key input { padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); }
+.hint { margin: 0; font-size: 13px; color: var(--muted); }
+
+.btn { width: fit-content; padding: 6px 14px; border-radius: 6px; border: 1px solid var(--accent); background: var(--accent); color: var(--on-accent); font-weight: 600; cursor: pointer; }
+.btn.quiet { background: transparent; color: var(--accent); border-color: transparent; padding-left: 0; margin-top: 8px; }
+.btn:disabled { opacity: .5; cursor: default; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.panes { display: grid; grid-template-columns: minmax(220px, 320px) 1fr; min-height: calc(100vh - 120px); }
+.pane { padding: 16px; min-width: 0; }
+.list { border-right: 1px solid var(--line); }
+.list select { width: 100%; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); margin-bottom: 10px; }
+.list ul { list-style: none; margin: 0 0 10px; padding: 0; }
+.list li a { display: flex; justify-content: space-between; gap: 8px; padding: 6px 8px; border-radius: 6px; color: var(--text); text-decoration: none; overflow-wrap: anywhere; }
+.list li a:hover { background: var(--surface); }
+.list li a.on { background: var(--surface); outline: 1px solid var(--line); font-weight: 600; }
+
+.element h2 { margin: 0; font-size: 20px; overflow-wrap: anywhere; }
+.kind { margin: 2px 0 10px; color: var(--muted); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.element .desc { white-space: pre-wrap; max-width: 70ch; overflow-wrap: anywhere; }
+dl { margin: 0; max-width: 70ch; }
+.row { display: grid; grid-template-columns: 160px 1fr; gap: 12px; padding: 6px 0; border-top: 1px solid var(--line); }
+dt { color: var(--muted); }
+dd { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+dd.links { display: flex; flex-wrap: wrap; gap: 4px 12px; white-space: normal; }
+
+.mark { font-size: 12px; border-radius: 999px; padding: 0 7px; border: 1px solid currentColor; white-space: nowrap; height: fit-content; }
+.mark.proposed { color: var(--proposed); }
+.mark.hidden { color: var(--hidden); }
+.mark.known-of { color: var(--muted); }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.wpic { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; }
+.epic { display: block; max-width: min(320px, 100%); max-height: 240px; border-radius: 8px; margin-bottom: 10px; object-fit: cover; }
+.problem { color: var(--problem); margin: 6px 0; }
+
+@media (max-width: 640px) {
+  .panes { grid-template-columns: 1fr; }
+  .list { border-right: 0; border-bottom: 1px solid var(--line); }
+  .row { grid-template-columns: 1fr; gap: 0; }
+}

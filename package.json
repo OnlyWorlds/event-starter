@@ -1,0 +1,24 @@
+{
+  "name": "onlyworlds-event-starter",
+  "private": true,
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "walk": "npm run build && node walk/played.mjs",
+    "live": "npm run build && node walk/live.mjs"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8",
+    "vitest": "^2.1.9"
+  },
+  "dependencies": {
+    "@onlyworlds/sdk": "4.85.0"
+  }
+}
