@@ -3,6 +3,7 @@
 // (a read key, from the environment, never printed) reads that world through "Your world" too.
 //   npm run live                      (builds first)
 //   node walk/live.mjs [chromium|firefox]
+//   PAGE_URL=https://<your page>/ node walk/live.mjs    (your deployed page)
 // It writes nothing anywhere, keeps no trace, and checks the page's shape, not a world's contents.
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -12,7 +13,8 @@ import { chromium, firefox } from '@playwright/test';
 const here = dirname(fileURLToPath(import.meta.url));
 const dist = resolve(process.env.DIST ?? join(here, '..', 'dist'));
 const port = 4800 + Math.floor(Math.random() * 100);
-const base = `http://localhost:${port}/`;
+// PAGE_URL reads a page already online instead of serving dist/ here.
+const base = process.env.PAGE_URL?.trim() || `http://localhost:${port}/`;
 const engines = { chromium, firefox };
 const which = process.argv[2] ? [process.argv[2]] : ['chromium', 'firefox'];
 const key = (process.env.OW_KEY ?? '').trim();
@@ -23,9 +25,10 @@ const check = (ok, what) => {
   if (!ok) failures++;
 };
 
-const server = spawn(process.execPath, [join(here, 'serve.mjs'), dist, String(port)], { stdio: ['ignore', 'pipe', 'inherit'] });
-await new Promise((r) => server.stdout.once('data', r));
-const watchdog = setTimeout(() => { console.log('FAIL the walk ran out of time'); server.kill(); process.exit(1); }, 240_000);
+const server = process.env.PAGE_URL?.trim() ? null : spawn(process.execPath, [join(here, 'serve.mjs'), dist, String(port)], { stdio: ['ignore', 'pipe', 'inherit'] });
+if (server) await new Promise((r) => server.stdout.once('data', r));
+console.log(`reading ${base}`);
+const watchdog = setTimeout(() => { console.log('FAIL the walk ran out of time'); server?.kill(); process.exit(1); }, 240_000);
 
 for (const name of which) {
   console.log(`\n${name}`);
@@ -79,6 +82,6 @@ for (const name of which) {
 }
 if (!key) console.log('\n(set OW_KEY to a read key to read a world through "Your world" too)');
 clearTimeout(watchdog);
-server.kill();
+server?.kill();
 console.log(failures ? `\n${failures} failed` : '\nall passed');
 process.exit(failures ? 1 : 0);

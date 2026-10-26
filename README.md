@@ -65,6 +65,7 @@ npx playwright install chromium firefox   # once, for the walks
 npm run walk                              # the page in two browsers with OnlyWorlds played: no account, no network
 npm run live                              # your build in two browsers against the real OnlyWorlds
 OW_KEY=ow_r_... npm run live              # and a world read through "Your world" with that key
+PAGE_URL=https://<project>.pages.dev/ node walk/live.mjs   # the same checks on your page once it is online
 ```
 
 `npm run walk` always opens on its own played demo world and builds into `walk/.dist`, so a key in `.env.local` and your `dist/` are left alone. `npm run live` builds `dist/` as you would deploy it: with a key in `.env.local` it checks that the page opens on your world.
