@@ -41,9 +41,10 @@ Only ever a read key. Anyone who opens a web page can read every key in it, and 
 OnlyWorlds answers a web page only from addresses it knows. This page works from:
 
 - your own computer (`http://localhost:<any port>`)
+- GitHub Codespaces (`*.app.github.dev`)
 - Cloudflare Pages (`*.pages.dev`), GitHub Pages (`*.github.io`), Netlify, Vercel, Render, Firebase and the other common free hosts
 
-It does not work from GitHub Codespaces, another device on your network (`http://192.168…`) or a domain of your own. There the page says it could not reach OnlyWorlds.
+It does not work from another device on your network (`http://192.168…`) or a domain of your own. There the page says it could not reach OnlyWorlds.
 
 ## Put it online
 
