@@ -9,14 +9,14 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "walk": "npm run build && node walk/played.mjs",
+    "walk": "tsc && vite build --mode walk && node walk/played.mjs",
     "live": "npm run build && node walk/live.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.60.0",
     "typescript": "^5.2.2",
-    "vite": "^5.0.8",
-    "vitest": "^2.1.9"
+    "vite": "^8.3.5",
+    "vitest": "^5.0.5"
   },
   "dependencies": {
     "@onlyworlds/sdk": "4.85.0"

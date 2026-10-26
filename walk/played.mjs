@@ -8,7 +8,7 @@ import { dirname, join, resolve } from 'node:path';
 import { chromium, firefox, webkit } from '@playwright/test';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const dist = resolve(process.env.DIST ?? join(here, '..', 'dist'));
+const dist = resolve(process.env.DIST ?? join(here, '.dist'));
 const port = 4400 + Math.floor(Math.random() * 400);
 const base = `http://localhost:${port}/sub/`;
 const API = 'https://www.onlyworlds.com/api/v2';

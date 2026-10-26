@@ -45,11 +45,15 @@ export default defineConfig(({ mode }) => ({
   // repository's path (GitHub Pages, https://<you>.github.io/<repo>/).
   base: './',
   plugins: [policyInPage(), noSecrets(loadEnv(mode, process.cwd(), 'VITE_'))],
+  // `npm run walk` builds in its own mode: the page opens on the demo world whatever .env.local
+  // holds, and the build goes to walk/.dist, so your dist/ is left as it was.
+  define: mode === 'walk' ? { 'import.meta.env.VITE_OW_READ_KEY': '""' } : {},
   server: {
     port: 5173,
   },
   build: {
-    outDir: 'dist',
+    outDir: mode === 'walk' ? 'walk/.dist' : 'dist',
+    emptyOutDir: true,
     sourcemap: false,
   },
   test: {

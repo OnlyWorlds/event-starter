@@ -1,6 +1,8 @@
-// The built page against the real OnlyWorlds: it reads the demo world, and with OW_KEY set
-// (a read key, from the environment, never printed) your own world too.
-//   npm run build && node walk/live.mjs [chromium|firefox]
+// The built page against the real OnlyWorlds, in Chromium and Firefox: it reads the world the page
+// opens on (the demo world, or your own when .env.local builds a read key in), and with OW_KEY set
+// (a read key, from the environment, never printed) reads that world through "Your world" too.
+//   npm run live                      (builds first)
+//   node walk/live.mjs [chromium|firefox]
 // It writes nothing anywhere, keeps no trace, and checks the page's shape, not a world's contents.
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -11,7 +13,8 @@ const here = dirname(fileURLToPath(import.meta.url));
 const dist = resolve(process.env.DIST ?? join(here, '..', 'dist'));
 const port = 4800 + Math.floor(Math.random() * 100);
 const base = `http://localhost:${port}/`;
-const engine = { chromium, firefox }[process.argv[2] ?? 'chromium'];
+const engines = { chromium, firefox };
+const which = process.argv[2] ? [process.argv[2]] : ['chromium', 'firefox'];
 const key = (process.env.OW_KEY ?? '').trim();
 
 let failures = 0;
@@ -22,47 +25,60 @@ const check = (ok, what) => {
 
 const server = spawn(process.execPath, [join(here, 'serve.mjs'), dist, String(port)], { stdio: ['ignore', 'pipe', 'inherit'] });
 await new Promise((r) => server.stdout.once('data', r));
-const watchdog = setTimeout(() => { console.log('FAIL the walk ran out of time'); server.kill(); process.exit(1); }, 120_000);
-const browser = await engine.launch();
-try {
-  const page = await browser.newPage();
-  let violations = 0;
-  await page.exposeFunction('__violation', () => { violations++; });
-  await page.addInitScript(() => document.addEventListener('securitypolicyviolation', () => window.__violation()));
-  await page.goto(base);
-  await page.locator('.chip', { hasText: /Demo world|Built-in key/ }).waitFor();
-  await page.locator('nav li a, nav .problem, nav .muted:not(:has-text("Reading"))').first().waitFor({ timeout: 30_000 });
-  const title = (await page.locator('h1').textContent()) ?? '';
-  check(title.length > 0 && title !== 'Reading…' && title !== 'No world', `opens on a world (${title})`);
-  const first = page.locator('nav li a').first();
-  check((await page.locator('nav li a').count()) > 0, `lists its characters (${await page.locator('nav li a').count()})`);
-  await first.click();
-  await page.locator('main h2').waitFor({ timeout: 30_000 });
-  check(((await page.locator('main h2').textContent()) ?? '').length > 0, 'opens an element');
-  await page.screenshot({ path: join(here, 'out-live-start.png') });
+const watchdog = setTimeout(() => { console.log('FAIL the walk ran out of time'); server.kill(); process.exit(1); }, 240_000);
 
-  if (key) {
-    await page.locator('summary', { hasText: 'Your world' }).click();
-    await page.fill('#key', key);
-    await page.press('#key', 'Enter');
-    await page.locator('.chip', { hasText: 'Your key' }).waitFor();
-    await page.locator('h1:not(:has-text("Reading…"))').waitFor({ timeout: 30_000 });
-    const mine = (await page.locator('h1').textContent()) ?? '';
-    check(mine !== title && mine !== 'No world', `reads your world with your key (${mine})`);
-    check(await page.evaluate(() => [...document.querySelectorAll('input')].every((i) => i.value === '')), 'the key field is empty again');
-    await page.locator('nav li a, nav .muted:not(:has-text("Reading"))').first().waitFor({ timeout: 30_000 });
-    await page.screenshot({ path: join(here, 'out-live-yours.png') });
-  } else {
-    console.log('(set OW_KEY to a read key to walk your own world too)');
+for (const name of which) {
+  console.log(`\n${name}`);
+  let browser;
+  try {
+    browser = await engines[name].launch();
+  } catch {
+    console.log(`FAIL ${name} is not installed here: run  npx playwright install ${name}`);
+    failures++;
+    continue;
   }
-  check(violations === 0, `the page's policy refused nothing (${violations})`);
-} catch (err) {
-  console.log(`FAIL ${String(err?.message ?? err).split('\n')[0]}`);
-  failures++;
-} finally {
-  clearTimeout(watchdog);
-  await browser.close();
-  server.kill();
+  try {
+    const page = await browser.newPage();
+    let violations = 0;
+    await page.exposeFunction('__violation', () => { violations++; });
+    await page.addInitScript(() => document.addEventListener('securitypolicyviolation', () => window.__violation()));
+    await page.goto(base);
+    const chip = page.locator('.chip', { hasText: /Demo world|Built-in key/ });
+    await chip.waitFor();
+    await page.locator('nav li a, nav .problem, nav .muted:not(:has-text("Reading"))').first().waitFor({ timeout: 30_000 });
+    const title = (await page.locator('h1').textContent()) ?? '';
+    check(title.length > 0 && title !== 'Reading…' && title !== 'No world', `opens on a world (${title}, ${await chip.textContent()})`);
+    const count = await page.locator('nav li a').count();
+    check(count > 0, `lists its characters (${count})`);
+    if (count > 0) {
+      await page.locator('nav li a').first().click();
+      await page.locator('main h2').waitFor({ timeout: 30_000 });
+      check(((await page.locator('main h2').textContent()) ?? '').length > 0, 'opens an element');
+    }
+    await page.screenshot({ path: join(here, `out-live-${name}-start.png`) });
+
+    if (key) {
+      await page.locator('summary', { hasText: 'Your world' }).click();
+      await page.fill('#key', key);
+      await page.press('#key', 'Enter');
+      await page.locator('.chip', { hasText: 'Your key' }).waitFor();
+      await page.locator('h1:not(:has-text("Reading…"))').waitFor({ timeout: 30_000 });
+      const mine = (await page.locator('h1').textContent()) ?? '';
+      check(mine !== 'No world', `reads a world with OW_KEY (${mine})`);
+      check(await page.evaluate(() => [...document.querySelectorAll('input')].every((i) => i.value === '')), 'the key field is empty again');
+      await page.locator('nav li a, nav .muted:not(:has-text("Reading"))').first().waitFor({ timeout: 30_000 });
+      await page.screenshot({ path: join(here, `out-live-${name}-yours.png`) });
+    }
+    check(violations === 0, `the page's policy refused nothing (${violations})`);
+  } catch (err) {
+    console.log(`FAIL ${String(err?.message ?? err).split('\n')[0]}`);
+    failures++;
+  } finally {
+    await browser.close();
+  }
 }
+if (!key) console.log('\n(set OW_KEY to a read key to read a world through "Your world" too)');
+clearTimeout(watchdog);
+server.kill();
 console.log(failures ? `\n${failures} failed` : '\nall passed');
 process.exit(failures ? 1 : 0);

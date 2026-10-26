@@ -6,7 +6,7 @@ It is plain TypeScript with [Vite](https://vite.dev) and the [OnlyWorlds SDK](ht
 
 ## Start
 
-You need [Node.js](https://nodejs.org) 20 or newer.
+You need [Node.js](https://nodejs.org) 22.12 or newer.
 
 ```bash
 npm install
@@ -60,12 +60,14 @@ The build is a folder of static files (`npm run build` makes `dist/`). Either of
 ## Checks
 
 ```bash
-npm test                              # the units, no network
+npm test                                  # the units, no network
 npx playwright install chromium firefox   # once, for the walks
-npm run walk                          # the built page in two browsers, OnlyWorlds played: no account, no network
-npm run live                          # the built page against the real OnlyWorlds, the demo world
-OW_KEY=ow_r_... npm run live          # and your own world
+npm run walk                              # the page in two browsers with OnlyWorlds played: no account, no network
+npm run live                              # your build in two browsers against the real OnlyWorlds
+OW_KEY=ow_r_... npm run live              # and a world read through "Your world" with that key
 ```
+
+`npm run walk` always opens on its own played demo world and builds into `walk/.dist`, so a key in `.env.local` and your `dist/` are left alone. `npm run live` builds `dist/` as you would deploy it: with a key in `.env.local` it checks that the page opens on your world.
 
 ## About this starter
 
