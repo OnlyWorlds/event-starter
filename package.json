@@ -19,6 +19,6 @@
     "vitest": "^5.0.5"
   },
   "dependencies": {
-    "@onlyworlds/sdk": "4.85.0"
+    "@onlyworlds/sdk": "4.100.0"
   }
 }
