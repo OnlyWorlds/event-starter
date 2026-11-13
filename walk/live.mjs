@@ -49,6 +49,8 @@ for (const name of which) {
     const chip = page.locator('.chip', { hasText: /Demo world|Built-in key/ });
     await chip.waitFor();
     await page.locator('nav li a, nav .problem, nav .muted:not(:has-text("Reading"))').first().waitFor({ timeout: 30_000 });
+    // The list can land before the world's name: wait for the heading to settle too.
+    await page.waitForFunction(() => { const t = document.querySelector('h1')?.textContent ?? ''; return t !== '' && t !== 'Reading…'; }, null, { timeout: 30_000 }).catch(() => {});
     const title = (await page.locator('h1').textContent()) ?? '';
     check(title.length > 0 && title !== 'Reading…' && title !== 'No world', `opens on a world (${title}, ${await chip.textContent()})`);
     const count = await page.locator('nav li a').count();

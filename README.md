@@ -30,8 +30,9 @@ Only ever a read key. Anyone who opens a web page can read every key in it, and 
 
 ## Make it yours
 
-- `src/world.ts` is the one file that talks to OnlyWorlds. Add new reads here. Set `TOOL_NAME` to your tool's name.
-- `src/main.ts` is the page. `src/style.css` holds the look; its colours are at the top.
+- `src/world.ts` is the one file that talks to OnlyWorlds. Add new reads here.
+- `src/main.ts` is the page. It calls `world.ts` in three places: `readWorld` (the header), `readList` (the list of one type) and `readElement` (one element's fields). To show a new read, call it from one of those, keep its answer in a variable, and draw it in `renderHeader`, `listPane` or `elementPane`. `src/style.css` holds the look; its colours are at the top.
+- `TOOL_NAME` in `src/world.ts` names your tool on anything it writes, once you add writes (a read never sends it). It takes lower-case letters, digits and hyphens, up to 32 characters; another name stops the page at its start. Rename the project in `package.json` too.
 - The page's title is in `index.html`, and its security policy in `public/_headers`. When your page calls another site or shows pictures from one, add that host there.
 - Building with an AI assistant? It should read `AGENTS.md` first.
 - To write to a world, see the SDK's README ("Reading and writing", "Your own world"). Writes need a write key and a PIN, which never go in a web page: use a small server or a script.
