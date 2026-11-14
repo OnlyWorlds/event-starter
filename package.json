@@ -1,7 +1,7 @@
 {
   "name": "onlyworlds-event-starter",
   "private": true,
-  "version": "0.2.2",
+  "version": "0.2.3",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -19,6 +19,6 @@
     "vitest": "^5.0.5"
   },
   "dependencies": {
-    "@onlyworlds/sdk": "4.164.0"
+    "@onlyworlds/sdk": "4.167.0"
   }
 }
