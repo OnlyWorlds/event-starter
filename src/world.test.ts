@@ -70,6 +70,20 @@ describe('World', () => {
     expect((await w.page('narrative', 'same')).next).toBe(null);
   });
 
+  it('an empty list or empty object as the room mark is no mark: the element stays in the list (serial 126)', async () => {
+    const { f } = fakeServer(() => json({
+      data: [
+        { id: 'n1', name: 'Plot', supertype: 'Message', x_room_of: [] },
+        { id: 'n2', name: 'Aside', supertype: 'Message', x_room_of: {} },
+        { id: 'n3', name: 'hi all', supertype: 'Message', x_room_of: 'w1' },
+      ],
+      has_more: false, next_cursor: null,
+    }));
+    const page = await new World(READ_KEY, undefined, f).page('narrative');
+    expect(page.elements.map((e) => e.id)).toEqual(['n1', 'n2']);
+    expect(page.roomLeftOut).toBe(1);
+  });
+
   it('asks for an element with its links expanded, and refuses an id that is not one', async () => {
     const { f, calls } = fakeServer(() => json({ id: ID, name: 'Navy', objects: [{ id: 'o1', name: 'Ship' }] }));
     const w = new World(READ_KEY, undefined, f);
